@@ -45,7 +45,7 @@
   (wrap-indent identity n list))
 
 ;; -------------------------------------------------------------------------
-;; Options - currently: reagent, re-frame, om, om-next, sass, garden, devtools, dirac
+;; Options - currently: reagent, re-frame, om, om-next, hiccup, hiccup-bootstrap, sass, garden, devtools, dirac
 ;; -------------------------------------------------------------------------
 
 (defn reagent? [opts]
@@ -65,6 +65,12 @@
 
 (defn sass? [opts]
   (some #{"+sass"} opts))
+
+(defn hiccup? [opts]
+  (some #{"+hiccup"} opts))
+
+(defn hiccup-bootstrap? [opts]
+  (some #{"+hiccup-bootstrap"} opts))
 
 (defn garden? [opts]
   (some #{"+garden"} opts))
@@ -242,7 +248,9 @@
     (warn-on-exclusive-opts! opts)
     (apply (partial ->files data)
            (remove nil?
-                   (vector (if (garden? opts)  ["src/clj/{{sanitized}}/styles.clj" (render "styles.clj" data)])
+                   (vector (if (hiccup? opts)  ["src/clj/{{sanitized}}/page.clj" (render "page.clj")])
+                           (if (hiccup-bootstrap? opts) ["src/clj/{{sanitized}}/page.clj" (render "bootstrap-page.clj")])
+                           (if (garden? opts)  ["src/clj/{{sanitized}}/styles.clj" (render "styles.clj" data)])
                            (if (sass? opts)    ["sass/css/sass.scss" (render "sass.scss" data)])
 
                            (if (test? opts)    ["test/cljs/{{sanitized}}/app_test.cljs" (render "app_test.cljs" data)])
