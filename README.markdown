@@ -98,6 +98,10 @@ project will contain:
 -   `+rum` provides a basic
     [Rum](https://github.com/tonsky/rum) application
     and adds relevant dependencies
+-   `+hiccup` sets up rendering html from
+    [Hiccup](https://github.com/weavejester/hiccup) as part of the
+    build process
+-   `+hiccup-bootstrap` like `+hiccup` but also includes [Bootstrap 4](https://getbootstrap.com/)
 -   `+garden` sets up [Garden](https://github.com/noprompt/garden) and
     integrates into the build process
 -   `+sass` sets up [Sass](http://sass-lang.com) and integrates into
