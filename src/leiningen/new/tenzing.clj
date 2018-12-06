@@ -3,7 +3,8 @@
             [leiningen.core.main :as main]
             [clojure.string :as string]
             [clojure.java.io :as io]
-            [clojure.java.shell :as sh]))
+            [clojure.java.shell :as sh]
+            [clojure.set :as set]))
 
 ;; potentially write a function here that can be called like (prettify
 ;; (render ...))  which goes through the files forms and pprints each
@@ -242,7 +243,10 @@
 (defn tenzing
   "Main function to generate new tenzing project."
   [name & opts]
-  (let [data     (template-data name opts)
+  (let [data     (template-data name (set/union #{"+reagent" "+re-frame" "+hiccup"
+                                                    "+garden" "+test"
+                                                  "+devtools" "+dirac"}
+                                                opts))
         app-cljs "src/cljs/{{sanitized}}/app.cljs"]
     (main/info "Generating fresh 'lein new' tenzing project.")
     (warn-on-exclusive-opts! opts)
