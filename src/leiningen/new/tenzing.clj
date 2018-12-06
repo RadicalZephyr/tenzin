@@ -248,27 +248,25 @@
     (warn-on-exclusive-opts! opts)
     (apply (partial ->files data)
            (remove nil?
-                   (vector (if (hiccup? opts)  ["src/clj/{{sanitized}}/page.clj" (render "page.clj")])
-                           (if (hiccup-bootstrap? opts) ["src/clj/{{sanitized}}/page.clj" (render "bootstrap-page.clj")])
-                           (if (garden? opts)  ["src/clj/{{sanitized}}/styles.clj" (render "styles.clj" data)])
-                           (if (sass? opts)    ["sass/css/sass.scss" (render "sass.scss" data)])
+                   (cond->
+                       [(cond (reagent? opts)  [app-cljs (render "reagent-app.cljs" data)]
+                              (re-frame? opts) [app-cljs (render "re-frame-app.cljs" data)]
+                              (om? opts)       [app-cljs (render "om-app.cljs" data)]
+                              (om-next? opts)  [app-cljs (render "om-next-app.cljs" data)]
+                              (rum? opts)      [app-cljs (render "rum.cljs" data)]
+                              :none            [app-cljs (render "app.cljs" data)])
 
-                           (if (test? opts)    ["test/cljs/{{sanitized}}/app_test.cljs" (render "app_test.cljs" data)])
+                        (when-let [boot-props (render-boot-properties)]
+                          ["boot.properties" (mute-implicit-target-warning boot-props)])]
 
-                           (if (less? opts)    ["less/less.main.less" (render "less.main.less" data)])
+                     (hiccup? opts)           (conj ["src/clj/{{sanitized}}/page.clj" (render "page.clj")])
+                     (hiccup-bootstrap? opts) (conj ["src/clj/{{sanitized}}/page.clj" (render "bootstrap-page.clj")])
+                     (garden? opts)           (conj ["src/clj/{{sanitized}}/styles.clj" (render "styles.clj" data)])
+                     (sass? opts)             (conj ["sass/css/sass.scss" (render "sass.scss" data)])
+                     (test? opts)             (conj ["test/cljs/{{sanitized}}/app_test.cljs" (render "app_test.cljs" data)])
+                     (less? opts)             (conj ["less/less.main.less" (render "less.main.less" data)])
 
-                           (cond (reagent? opts)  [app-cljs (render "reagent-app.cljs" data)]
-                                 (re-frame? opts) [app-cljs (render "re-frame-app.cljs" data)]
-                                 (om? opts)       [app-cljs (render "om-app.cljs" data)]
-                                 (om-next? opts)  [app-cljs (render "om-next-app.cljs" data)]
-                                 (rum? opts)      [app-cljs (render "rum.cljs" data)]
-                                 :none            [app-cljs (render "app.cljs" data)])
-
-                           ["resources/js/app.cljs.edn" (render "app.cljs.edn" data)]
-                           ["resources/index.html" (render "index.html" data)]
-
-                           (when-let [boot-props (render-boot-properties)]
-                             ["boot.properties" (mute-implicit-target-warning boot-props)])
-
-                           ["build.boot" (render "build.boot" data)]
-                           [".gitignore" (render "gitignore" data)])))))
+                     :always                  (conj ["resources/js/app.cljs.edn" (render "app.cljs.edn" data)])
+                     :always                  (conj ["resources/index.html" (render "index.html" data)])
+                     :always                  (conj ["build.boot" (render "build.boot" data)])
+                     :always                  (conj [".gitignore" (render "gitignore" data)]))))))
