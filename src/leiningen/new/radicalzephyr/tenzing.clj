@@ -1,4 +1,4 @@
-(ns leiningen.new.tenzing
+(ns leiningen.new.radicalzephyr.tenzing
   (:require [leiningen.new.templates :as t :refer [name-to-path ->files sanitize slurp-resource]]
             [leiningen.core.main :as main]
             [clojure.string :as string]
